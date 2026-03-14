@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SZAMLAZZ_AGENT_KEY=${SZAMLAZZ_AGENT_KEY}
+      - SZAMLAZZ_PDF_DOWNLOAD=${SZAMLAZZ_PDF_DOWNLOAD:-false}
+      - SPRING_PROFILES_ACTIVE=dev
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/api/receipts"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      backend:
+        condition: service_healthy
